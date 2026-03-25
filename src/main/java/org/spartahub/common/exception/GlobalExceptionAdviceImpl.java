@@ -1,8 +1,10 @@
 package org.spartahub.common.exception;
 
 import jakarta.persistence.OptimisticLockException;
+import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.MDC;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -22,17 +24,17 @@ public class GlobalExceptionAdviceImpl implements GlobalExceptionAdvice {
     // 직접 정의한 CustomException 처리
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<ErrorResponse> handleCustomException(CustomException e) {
-        log.error("Custom Exception: {}", e.getMessage());
+        // MDC에서 traceId를 가져와 로그에 명시적으로 출력
+        log.error("[TraceID: {}] Custom Exception: {}", MDC.get("traceId"), e.getMessage());
         return ResponseEntity
                 .status(e.getStatus())
                 .body(ErrorResponse.of(e.getStatus(), e.getField(), e.getMessage()));
     }
 
-    // Bean Validation (@Valid) 실패 시 처리,
-    // 모든 에러 필드와 메시지를 Map으로 수집하여 JSON 형태로 응답합니다.
+    // Bean Validation (@Valid) 실패 시 처리
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        log.error("Validation Exception: {} errors found", e.getBindingResult().getErrorCount());
+        log.error("[TraceID: {}] Validation Exception: {} errors found", MDC.get("traceId"), e.getBindingResult().getErrorCount());
 
         Map<String, String> errors = e.getBindingResult().getFieldErrors().stream()
                 .collect(Collectors.toMap(
@@ -47,31 +49,41 @@ public class GlobalExceptionAdviceImpl implements GlobalExceptionAdvice {
     }
 
     /**
-     * 제약 조건 위반 (@Validated) 처리
+     * 제약 조건 위반 (@Validated) 처리 보강
      */
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException e) {
-        log.error("Constraint Violation: {}", e.getMessage());
+        log.error("[TraceID: {}] Constraint Violation: {}", MDC.get("traceId"), e.getMessage());
+
+        // PathVariable 등에서 발생하는 에러를 필드 단위로 상세화
+        Map<String, String> errors = e.getConstraintViolations().stream()
+                .collect(Collectors.toMap(
+                        violation -> {
+                            String path = violation.getPropertyPath().toString();
+                            return path.substring(path.lastIndexOf('.') + 1);
+                        },
+                        ConstraintViolation::getMessage,
+                        (existing, replacement) -> existing + ", " + replacement
+                ));
+
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
-                .body(ErrorResponse.of(HttpStatus.BAD_REQUEST, e.getMessage()));
+                .body(ErrorResponse.of(HttpStatus.BAD_REQUEST, errors));
     }
 
     // HTTP 요청 바디(Body)가 없거나 읽을 수 없는 경우
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
-        log.error("Message Not Readable: {}", e.getMessage());
+        log.error("[TraceID: {}] Message Not Readable: {}", MDC.get("traceId"), e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ErrorResponse.of(HttpStatus.BAD_REQUEST, "요청 본문(Body)이 누락되었거나 형식이 잘못되었습니다."));
     }
 
-
-
     // 잘못된 인자 전달 (IllegalArgumentException)
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException e) {
-        log.error("Illegal Argument: {}", e.getMessage());
+        log.error("[TraceID: {}] Illegal Argument: {}", MDC.get("traceId"), e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ErrorResponse.of(HttpStatus.BAD_REQUEST, "잘못된 요청 값: " + e.getMessage()));
@@ -80,7 +92,7 @@ public class GlobalExceptionAdviceImpl implements GlobalExceptionAdvice {
     // 낙관적 락 충돌 (동시성 제어 실패)
     @ExceptionHandler({OptimisticLockException.class, ObjectOptimisticLockingFailureException.class})
     public ResponseEntity<ErrorResponse> handleOptimisticLockException(Exception e) {
-        log.error("Optimistic Lock Error: {}", e.getMessage());
+        log.error("[TraceID: {}] Optimistic Lock Error: {}", MDC.get("traceId"), e.getMessage());
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
                 .body(ErrorResponse.of(HttpStatus.CONFLICT, "데이터 변경 중에 충돌이 발생했습니다. 다시 시도해주세요."));
@@ -89,7 +101,8 @@ public class GlobalExceptionAdviceImpl implements GlobalExceptionAdvice {
     // 그 외 정의되지 않은 모든 예외 처리
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleAllException(Exception e) {
-        log.error("Unhandled Exception occurred: ", e);
+        // 시스템 예외는 추적을 위해 StackTrace 전체와 TraceID를 기록
+        log.error("[TraceID: {}] Unhandled Exception occurred", MDC.get("traceId"), e);
         return ResponseEntity
                 .status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ErrorResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, "서버 내부 오류가 발생했습니다."));
