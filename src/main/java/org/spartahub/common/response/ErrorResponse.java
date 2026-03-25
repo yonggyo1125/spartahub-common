@@ -1,4 +1,4 @@
-package org.spartahub.common.exception;
+package org.spartahub.common.response;
 
 import org.slf4j.MDC;
 import org.springframework.http.HttpStatusCode;
