@@ -1,0 +1,99 @@
+plugins {
+    id 'java-library'
+    id 'maven-publish'
+    // Gradle 9.x와 호환되는 최신 패치 버전 사용
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id 'org.springframework.boot' version '4.0.4'
+    id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.github.yonggyo1125'
+version = '0.0.1'
+
+java {
+    toolchain { languageVersion = JavaLanguageVersion.of(21) }
+}
+
+bootJar { enabled = false }
+jar { enabled = true }
+
+repositories {
+    mavenCentral()
+    maven { url 'https://repo.spring.io/milestone' }
+}
+
+ext {
+    set('springCloudVersion', "2025.1.1")
+}
+
+dependencies {
+    api 'org.springframework.boot:spring-boot-starter-data-jpa'
+    api 'org.springframework.boot:spring-boot-starter-kafka'
+    api 'org.springframework.boot:spring-boot-starter-security'
+    api 'org.springframework.boot:spring-boot-starter-webmvc'
+    api 'org.springframework.cloud:spring-cloud-starter-config'
+    api 'org.springframework.cloud:spring-cloud-starter-loadbalancer'
+    api 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+    api 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'
+    api 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
+    api "org.springframework.boot:spring-boot-starter-aop:4.0.0-M2"
+    api "io.github.resilience4j:resilience4j-spring-boot3:2.2.0"
+    api 'io.github.resilience4j:resilience4j-circuitbreaker'
+    api 'io.github.resilience4j:resilience4j-retry'
+
+    api 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.1'
+
+    api 'com.querydsl:querydsl-jpa:5.1.0:jakarta'
+    annotationProcessor 'com.querydsl:querydsl-apt:5.1.0:jakarta'
+    annotationProcessor 'jakarta.annotation:jakarta.annotation-api'
+    annotationProcessor 'jakarta.persistence:jakarta.persistence-api'
+
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+}
+
+shadowJar {
+    archiveClassifier.set('')
+    mergeServiceFiles()
+
+    // Gradle 9.x 'mode' 에러 해결을 위한 핵심 옵션
+    zip64 = true
+
+    // 에러 발생 시 아래 append 중 하나씩 주석처리하며 범인을 찾으세요.
+    // 특히 'spring.handlers' 쪽에서 에러가 자주 발생합니다.
+    append 'META-INF/spring.handlers'
+    append 'META-INF/spring.schemas'
+    append 'META-INF/spring.tooling'
+    append 'META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports'
+}
+
+publishing {
+    publications {
+        gpr(MavenPublication) {
+            artifact shadowJar
+            artifactId = 'common'
+        }
+    }
+    repositories {
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/yonggyo1125/spartahub-common")
+            credentials {
+                username = System.getenv("GPR_USER")
+                password = System.getenv("GPR_TOKEN")
+            }
+        }
+    }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
+
+def querydslDir = layout.buildDirectory.dir("querydsl").get().asFile
+sourceSets { main.java.srcDirs += [ querydslDir ] }
+tasks.withType(JavaCompile) { options.getGeneratedSourceOutputDirectory().set(file(querydslDir)) }
+clean.doLast { file(querydslDir).deleteDir() }
