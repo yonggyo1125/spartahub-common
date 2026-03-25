@@ -1,5 +1,7 @@
 package org.spartahub.config;
 
+import org.spartahub.common.exception.GlobalExceptionAdvice;
+import org.spartahub.common.exception.GlobalExceptionAdviceImpl;
 import org.spartahub.config.security.SecurityConfig;
 import org.spartahub.config.security.SecurityConfigImpl;
 import org.spartahub.config.swagger.SwaggerConfig;
@@ -7,6 +9,7 @@ import org.spartahub.config.swagger.SwaggerConfigImpl;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.context.annotation.Bean;
 
 // 스프링 부트의 자동 설정 매커니즘에 참여하여 라이브러리 로드 시 자동 실행됨
 @AutoConfiguration
@@ -14,16 +17,23 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplicat
 public class AppCtx {
 
     // SecurityConfig로 등록된 빈이 없다면 등록
+    @Bean
     @ConditionalOnMissingBean(SecurityConfig.class)
     public SecurityConfig securityConfig() {
         return new SecurityConfigImpl();
     }
 
     // SwaggerConfig로 등록된 빈이 없다면 등록
-    @ConditionalOnMissingBean
+    @Bean
+    @ConditionalOnMissingBean(SwaggerConfig.class)
     public SwaggerConfig swaggerConfig() {
         return new SwaggerConfigImpl();
     }
 
-
+    // 전역 에러 출력 처리, GlobalExceptionAdvice로 등록된 빈이 없을때 기본 설정으로 등록됨
+    @Bean
+    @ConditionalOnMissingBean(GlobalExceptionAdvice.class)
+    public GlobalExceptionAdvice globalExceptionAdvice() {
+        return new GlobalExceptionAdviceImpl();
+    }
 }
