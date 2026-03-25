@@ -9,4 +9,26 @@
             <charset>utf8</charset>
         </encoder>
     </appender>
+
+    <appender name="KAFKA" class="github.danielwegener.logback.kafka.KafkaAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <includeMdc>true</includeMdc>
+        </encoder>
+
+        <topic>spartahub-logs</topic>
+
+        <producerConfig>bootstrap.servers=${BOOTSTRAP_SERVERS:-localhost:9092}</producerConfig>
+
+        <producerConfig>acks=1</producerConfig>
+        <producerConfig>linger.ms=1000</producerConfig>
+        <fallbackAppenderRef ref="CONSOLE" />
+    </appender>
+
+    <appender name="ASYNC_KAFKA" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="KAFKA" />
+        <queueSize>512</queueSize> <!-- 로그를 임시로 저장해둘 내부 메모리 버퍼(Queue)의 크기 -->
+        <discardingThreshold>0</discardingThreshold> <!-- 큐가 가득 차기 시작할 때 로그를 삭제할 기준, 0은 삭제하지 않음 -->
+        <neverBlock>true</neverBlock> <!-- 블로킹 여부, false: 큐가 꽉 차면 메인 쓰레드가 멈춰서 기다림, true: 큐가 꽉 차면 바로 로그를 드롭 시킴 -->
+        <maxFlushTime>5000</maxFlushTime> <!-- 애플리케이션 종료 시 큐에 남은 로그를 처리하기 위해 기다려주는 최대 시간(ms) -->
+    </appender>
 </included>

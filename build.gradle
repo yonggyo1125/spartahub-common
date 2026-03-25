@@ -7,7 +7,7 @@ plugins {
 }
 
 group = 'com.github.yonggyo1125'
-version = '0.0.1'
+version = '0.0.1-SNAPSHOT'
 
 java {
     toolchain { languageVersion = JavaLanguageVersion.of(21) }
@@ -42,6 +42,9 @@ dependencies {
     api 'io.github.resilience4j:resilience4j-retry'
 
     api 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.1'
+
+    implementation 'com.github.danielwegener:logback-kafka-appender:0.2.0'
+    implementation 'net.logstash.logback:logstash-logback-encoder:7.4'
 
     api 'com.querydsl:querydsl-jpa:5.1.0:jakarta'
     annotationProcessor 'com.querydsl:querydsl-apt:5.1.0:jakarta'
