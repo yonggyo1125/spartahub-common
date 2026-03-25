@@ -1,7 +1,6 @@
 plugins {
     id 'java-library'
     id 'maven-publish'
-    // Gradle 9.x와 호환되는 최신 패치 버전 사용
     id 'com.github.johnrengelman.shadow' version '8.1.1'
     id 'org.springframework.boot' version '4.0.4'
     id 'io.spring.dependency-management' version '1.1.7'
@@ -56,12 +55,8 @@ dependencies {
 shadowJar {
     archiveClassifier.set('')
     mergeServiceFiles()
-
-    // Gradle 9.x 'mode' 에러 해결을 위한 핵심 옵션
     zip64 = true
 
-    // 에러 발생 시 아래 append 중 하나씩 주석처리하며 범인을 찾으세요.
-    // 특히 'spring.handlers' 쪽에서 에러가 자주 발생합니다.
     append 'META-INF/spring.handlers'
     append 'META-INF/spring.schemas'
     append 'META-INF/spring.tooling'
