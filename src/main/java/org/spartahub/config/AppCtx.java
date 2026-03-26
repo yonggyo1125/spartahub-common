@@ -6,6 +6,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.spartahub.common.exception.GlobalExceptionAdvice;
 import org.spartahub.common.exception.GlobalExceptionAdviceImpl;
 import org.spartahub.common.filter.MdcLoggingFilter;
+import org.spartahub.config.event.EventConfig;
 import org.spartahub.config.feign.FeignConfig;
 import org.spartahub.config.persistence.JPAConfig;
 import org.spartahub.config.security.LoginFilter;
@@ -26,7 +27,8 @@ import org.springframework.web.client.RestClient;
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET) // 일반적인 서블릿 기반 웹 애플리케이션 환경일 때만 이 설정을 활성화함
 @Import({
         JPAConfig.class,
-        FeignConfig.class
+        FeignConfig.class,
+        EventConfig.class
 })
 public class AppCtx {
 
