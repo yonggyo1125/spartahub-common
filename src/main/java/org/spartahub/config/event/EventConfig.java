@@ -6,7 +6,7 @@ import org.spartahub.common.domain.OutboxRepository;
 import org.spartahub.common.event.Events;
 import org.spartahub.common.event.OutboxEventListener;
 import org.spartahub.common.event.OutboxRelay;
-import org.spartahub.common.messaging.aspect.InboxAdvice;
+import org.spartahub.common.messaging.advice.InboxAdvice;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;

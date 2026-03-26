@@ -1,4 +1,4 @@
-package org.spartahub.common.messaging.aspect;
+package org.spartahub.common.messaging.advice;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
