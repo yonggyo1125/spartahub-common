@@ -11,9 +11,11 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.task.DelegatingSecurityContextAsyncTaskExecutor;
 
@@ -21,6 +23,8 @@ import java.util.concurrent.Executor;
 
 @EnableAsync
 @Configuration
+@EnableScheduling
+@EnableAspectJAutoProxy(proxyTargetClass = true)
 public class EventConfig implements AsyncConfigurer {
 
     @Bean
