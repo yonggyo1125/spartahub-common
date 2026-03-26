@@ -13,7 +13,7 @@ import java.util.UUID;
 @Getter
 @Builder
 @Access(AccessType.FIELD)
-@Table(name = "P_INBOX")
+@Table(name = "P_INBOX", indexes = @Index(name = "idx_inbox_message_group", columnList = "messageGroup"))
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @EntityListeners(AuditingEntityListener.class)
