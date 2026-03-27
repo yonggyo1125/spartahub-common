@@ -1,4 +1,4 @@
-package org.spartahub.common.event;
+package org.spartahub.common.event.scheduler;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +16,7 @@ import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
-public class OutboxRelay {
+public class OutboxRelayScheduler {
     private final OutboxRepository outboxRepository;
     private final KafkaTemplate<String, Object> kafkaTemplate;
 

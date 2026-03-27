@@ -5,8 +5,9 @@ import org.spartahub.common.domain.InboxRepository;
 import org.spartahub.common.domain.OutboxRepository;
 import org.spartahub.common.event.Events;
 import org.spartahub.common.event.OutboxEventListener;
-import org.spartahub.common.event.OutboxRelay;
+import org.spartahub.common.event.scheduler.OutboxRelayScheduler;
 import org.spartahub.common.messaging.advice.InboxAdvice;
+import org.spartahub.common.messaging.scheduler.InboxCleanupScheduler;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
@@ -50,12 +51,17 @@ public class EventConfig implements AsyncConfigurer {
     }
 
     @Bean
-    public OutboxRelay outboxRelay(OutboxRepository outboxRepository, KafkaTemplate<String, Object> kafkaTemplate) {
-        return new OutboxRelay(outboxRepository, kafkaTemplate);
+    public OutboxRelayScheduler OutboxRelayScheduler(OutboxRepository outboxRepository, KafkaTemplate<String, Object> kafkaTemplate) {
+        return new OutboxRelayScheduler(outboxRepository, kafkaTemplate);
     }
 
     @Bean
     public InboxAdvice inboxAdvice(InboxRepository inboxRepository) {
         return new InboxAdvice(inboxRepository);
+    }
+
+    @Bean
+    public InboxCleanupScheduler inboxCleanupScheduler(InboxRepository inboxRepository) {
+        return new InboxCleanupScheduler(inboxRepository);
     }
 }

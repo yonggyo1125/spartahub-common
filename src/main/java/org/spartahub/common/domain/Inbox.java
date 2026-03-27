@@ -10,10 +10,14 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+@Entity
 @Getter
 @Builder
 @Access(AccessType.FIELD)
-@Table(name = "P_INBOX", indexes = @Index(name = "idx_inbox_message_group", columnList = "messageGroup"))
+@Table(name = "P_INBOX", indexes = {
+        @Index(name = "idx_inbox_message_group", columnList = "messageGroup"),
+        @Index(name = "idx_inbox_processed_at", columnList = "processedAt")
+})
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @EntityListeners(AuditingEntityListener.class)
