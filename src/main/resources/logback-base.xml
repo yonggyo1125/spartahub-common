@@ -10,7 +10,7 @@
         </encoder>
     </appender>
 
-    <appender name="KAFKA" class="github.danielwegener.logback.kafka.KafkaAppender">
+    <appender name="KAFKA" class="com.github.danielwegener.logback.kafka.KafkaAppender">
         <encoder class="net.logstash.logback.encoder.LogstashEncoder">
             <includeMdc>true</includeMdc>
         </encoder>

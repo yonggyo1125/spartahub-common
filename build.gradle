@@ -1,20 +1,22 @@
 plugins {
     id 'java-library'
     id 'maven-publish'
-    id 'com.github.johnrengelman.shadow' version '8.1.1'
     id 'org.springframework.boot' version '4.0.4'
     id 'io.spring.dependency-management' version '1.1.7'
 }
 
 group = 'com.github.yonggyo1125'
-version = '0.0.2-SNAPSHOT'
+version = '0.0.10-SNAPSHOT'
 
 java {
     toolchain { languageVersion = JavaLanguageVersion.of(21) }
 }
 
 bootJar { enabled = false }
-jar { enabled = true }
+jar {
+    enabled = true
+    archiveClassifier.set('') // 일반 jar 생성
+}
 
 repositories {
     mavenCentral()
@@ -26,6 +28,7 @@ ext {
 }
 
 dependencies {
+    api 'org.springframework.boot:spring-boot-starter-validation'
     api 'org.springframework.boot:spring-boot-starter-data-jpa'
     api 'org.springframework.boot:spring-boot-starter-kafka'
     api 'org.springframework.boot:spring-boot-starter-security'
@@ -41,10 +44,10 @@ dependencies {
     api 'io.github.resilience4j:resilience4j-circuitbreaker'
     api 'io.github.resilience4j:resilience4j-retry'
 
-    api 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.1'
+    api 'org.springdoc:springdoc-openapi-starter-webmvc-ui:3.0.2'
 
-    implementation "com.github.danielwegener:logback-kafka-appender:0.2.0-RC2"
-    implementation 'net.logstash.logback:logstash-logback-encoder:7.4'
+    api "com.github.danielwegener:logback-kafka-appender:0.2.0-RC2"
+    api 'net.logstash.logback:logstash-logback-encoder:7.4'
 
     api 'com.querydsl:querydsl-jpa:5.1.0:jakarta'
     annotationProcessor 'com.querydsl:querydsl-apt:5.1.0:jakarta'
@@ -55,21 +58,12 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
 }
 
-shadowJar {
-    archiveClassifier.set('')
-    mergeServiceFiles()
-    zip64 = true
 
-    append 'META-INF/spring.handlers'
-    append 'META-INF/spring.schemas'
-    append 'META-INF/spring.tooling'
-    append 'META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports'
-}
 
 publishing {
     publications {
         gpr(MavenPublication) {
-            artifact shadowJar
+            from components.java
             artifactId = 'common'
         }
     }
@@ -92,6 +86,15 @@ dependencyManagement {
 }
 
 def querydslDir = layout.buildDirectory.dir("querydsl").get().asFile
-sourceSets { main.java.srcDirs += [ querydslDir ] }
-tasks.withType(JavaCompile) { options.getGeneratedSourceOutputDirectory().set(file(querydslDir)) }
-clean.doLast { file(querydslDir).deleteDir() }
+
+sourceSets {
+    main.java.srcDirs += [ querydslDir ]
+}
+
+tasks.withType(JavaCompile) {
+    options.getGeneratedSourceOutputDirectory().set(file(querydslDir))
+}
+
+clean.doLast {
+    file(querydslDir).deleteDir()
+}
