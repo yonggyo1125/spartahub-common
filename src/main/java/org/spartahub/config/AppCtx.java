@@ -1,13 +1,11 @@
 package org.spartahub.config;
 
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.spartahub.common.exception.GlobalExceptionAdvice;
 import org.spartahub.common.exception.GlobalExceptionAdviceImpl;
 import org.spartahub.common.filter.MdcLoggingFilter;
 import org.spartahub.config.event.EventConfig;
 import org.spartahub.config.feign.FeignConfig;
+import org.spartahub.config.json.JsonConfig;
 import org.spartahub.config.persistence.JPAConfig;
 import org.spartahub.config.security.LoginFilter;
 import org.spartahub.config.security.SecurityConfig;
@@ -24,21 +22,14 @@ import org.springframework.core.Ordered;
 @Import({
         FeignConfig.class,
         EventConfig.class,
-        JPAConfig.class
+        JPAConfig.class,
+        JsonConfig.class
 })
 public class AppCtx {
 
     @Bean
     public LoginFilter loginFilter() {
         return new LoginFilter();
-    }
-
-    @Bean
-    public ObjectMapper objectMapper() {
-        ObjectMapper om = new ObjectMapper();
-        om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        om.registerModule(new JavaTimeModule());
-        return om;
     }
 
     // SecurityConfig로 등록된 빈이 없다면 등록

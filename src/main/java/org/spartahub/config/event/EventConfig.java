@@ -9,8 +9,6 @@ import org.spartahub.common.event.OutboxEventListener;
 import org.spartahub.common.event.scheduler.OutboxRelayScheduler;
 import org.spartahub.common.messaging.advice.InboxAdvice;
 import org.spartahub.common.messaging.scheduler.InboxCleanupScheduler;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
@@ -30,8 +28,8 @@ import java.util.concurrent.Executor;
 public class EventConfig implements AsyncConfigurer {
 
     @Bean
-    public InitializingBean eventsInitializer(KafkaTemplate<String, Object> kafkaTemplate, ApplicationEventPublisher eventPublisher) {
-        return () -> Events.setDependency(kafkaTemplate, eventPublisher);
+    public Events events() {
+        return new Events();
     }
 
     // 비동기 적용시 생성될 스레드 풀 설정

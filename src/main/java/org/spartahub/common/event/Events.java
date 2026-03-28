@@ -1,16 +1,15 @@
 package org.spartahub.common.event;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.kafka.core.KafkaTemplate;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Events {
     private static KafkaTemplate<String, Object> kafkaTemplate;
     private static ApplicationEventPublisher eventPublisher;
 
-    public static void setDependency(KafkaTemplate<String, Object> kafkaTemplate, ApplicationEventPublisher eventPublisher) {
+    @Autowired
+    public void init(KafkaTemplate<String, Object> kafkaTemplate, ApplicationEventPublisher eventPublisher) {
         Events.kafkaTemplate = kafkaTemplate;
         Events.eventPublisher = eventPublisher;
     }
