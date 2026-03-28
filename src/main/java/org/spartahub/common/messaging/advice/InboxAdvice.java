@@ -37,7 +37,7 @@ public class InboxAdvice {
             // 메서드 실행 성공 시 Inbox에 기록 (messageId는 Outbox에서 발행된 ID이며 동일하게 저장합니다.)
             Inbox inbox = Inbox.builder()
                     .id(messageId)
-                    .messageGroup(idempotentConsumer.messageGroup())
+                    .messageGroup(idempotentConsumer.value())
                     .build();
 
             inboxRepository.saveAndFlush(inbox);

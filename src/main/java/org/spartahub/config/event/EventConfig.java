@@ -1,6 +1,7 @@
 package org.spartahub.config.event;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.spartahub.common.domain.InboxRepository;
 import org.spartahub.common.domain.OutboxRepository;
 import org.spartahub.common.event.Events;
@@ -61,7 +62,7 @@ public class EventConfig implements AsyncConfigurer {
     }
 
     @Bean
-    public InboxCleanupScheduler inboxCleanupScheduler(InboxRepository inboxRepository) {
-        return new InboxCleanupScheduler(inboxRepository);
+    public InboxCleanupScheduler inboxCleanupScheduler(JPAQueryFactory jpaQueryFactory) {
+        return new InboxCleanupScheduler(jpaQueryFactory);
     }
 }
