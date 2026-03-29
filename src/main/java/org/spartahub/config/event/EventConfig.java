@@ -9,6 +9,7 @@ import org.spartahub.common.event.OutboxEventListener;
 import org.spartahub.common.event.scheduler.OutboxRelayScheduler;
 import org.spartahub.common.messaging.advice.InboxAdvice;
 import org.spartahub.common.messaging.scheduler.InboxCleanupScheduler;
+import org.spartahub.common.util.MdcTaskDecorator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
@@ -40,6 +41,10 @@ public class EventConfig implements AsyncConfigurer {
         executor.setMaxPoolSize(50);        // 최대 스레드 수
         executor.setQueueCapacity(100);     // 대기 큐 용량
         executor.setThreadNamePrefix("Async-"); // 스레드 이름 접두사
+
+        // MdcTaskDecorator 등록
+        executor.setTaskDecorator(new MdcTaskDecorator());
+
         executor.initialize();
         return new DelegatingSecurityContextAsyncTaskExecutor(executor);
     }
