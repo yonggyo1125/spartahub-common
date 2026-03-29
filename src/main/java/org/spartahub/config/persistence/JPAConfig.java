@@ -14,8 +14,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @Configuration
 @EnableJpaAuditing
 @ConditionalOnProperty(name = "spring.datasource.url")
-@EnableJpaRepositories(basePackages = "org.spartahub.common.domain")
-@EntityScan(basePackages = "org.spartahub.common.domain")
+@EnableJpaRepositories(basePackages = "org.spartahub")
+@EntityScan(basePackages = "org.spartahub")
 public class JPAConfig {
 
     @PersistenceContext
