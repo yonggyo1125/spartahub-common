@@ -31,12 +31,10 @@ public class SecurityConfigImpl implements SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-                // 익명 사용자 설정을 명시적으로 활성화 (이게 없으면 permitAll도 401이 날 수 있음)
                 .anonymous(anonymous -> anonymous
                         .principal("anonymousUser")
                         .authorities("ROLE_ANONYMOUS")
                 )
-
                 .addFilterBefore(loginFilter, UsernamePasswordAuthenticationFilter.class)
 
                 .authorizeHttpRequests(authorize -> authorize
@@ -45,8 +43,12 @@ public class SecurityConfigImpl implements SecurityConfig {
 
                 .exceptionHandling(c -> {
                     c.authenticationEntryPoint((req, res, e) -> {
-                        log.error("Security EntryPoint 차단: {} - {}", req.getRequestURI(), e.getMessage());
+                        log.error("authenticationEntryPoint: {} - {}", req.getRequestURI(), e.getMessage());
                         res.sendError(HttpServletResponse.SC_UNAUTHORIZED);
+                    });
+                    c.accessDeniedHandler((req, res, e) -> {
+                        log.error("accessDeniedHandler: {} - {}", req.getRequestURI(), e.getMessage());
+                        res.sendError(HttpServletResponse.SC_FORBIDDEN);
                     });
                 });
 

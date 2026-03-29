@@ -26,7 +26,7 @@ public class GlobalExceptionAdviceImpl implements GlobalExceptionAdvice {
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<ErrorResponse> handleCustomException(CustomException e) {
         // MDC에서 traceId를 가져와 로그에 명시적으로 출력
-        log.error("[TraceID: {}] Custom Exception: {}", MDC.get("traceId"), e.getMessage());
+        log.error("[TraceID: {}] Custom Exception: {}", MDC.get("traceId"), e.getMessage(), e);
         return ResponseEntity
                 .status(e.getStatus())
                 .body(ErrorResponse.of(e.getStatus(), e.getField(), e.getMessage()));
@@ -35,7 +35,7 @@ public class GlobalExceptionAdviceImpl implements GlobalExceptionAdvice {
     // Bean Validation (@Valid) 실패 시 처리
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException e) {
-        log.error("[TraceID: {}] Validation Exception: {} errors found", MDC.get("traceId"), e.getBindingResult().getErrorCount());
+        log.error("[TraceID: {}] Validation Exception: {} errors found", MDC.get("traceId"), e.getBindingResult().getErrorCount(), e);
 
         Map<String, String> errors = e.getBindingResult().getFieldErrors().stream()
                 .collect(Collectors.toMap(
@@ -54,7 +54,7 @@ public class GlobalExceptionAdviceImpl implements GlobalExceptionAdvice {
      */
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException e) {
-        log.error("[TraceID: {}] Constraint Violation: {}", MDC.get("traceId"), e.getMessage());
+        log.error("[TraceID: {}] Constraint Violation: {}", MDC.get("traceId"), e.getMessage(), e);
 
         // PathVariable 등에서 발생하는 에러를 필드 단위로 상세화
         Map<String, String> errors = e.getConstraintViolations().stream()
@@ -75,7 +75,7 @@ public class GlobalExceptionAdviceImpl implements GlobalExceptionAdvice {
     // HTTP 요청 바디(Body)가 없거나 읽을 수 없는 경우
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handleHttpMessageNotReadableException(HttpMessageNotReadableException e) {
-        log.error("[TraceID: {}] Message Not Readable: {}", MDC.get("traceId"), e.getMessage());
+        log.error("[TraceID: {}] Message Not Readable: {}", MDC.get("traceId"), e.getMessage(), e);
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ErrorResponse.of(HttpStatus.BAD_REQUEST, "요청 본문(Body)이 누락되었거나 형식이 잘못되었습니다."));
@@ -84,7 +84,7 @@ public class GlobalExceptionAdviceImpl implements GlobalExceptionAdvice {
     // 잘못된 인자 전달 (IllegalArgumentException)
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException e) {
-        log.error("[TraceID: {}] Illegal Argument: {}", MDC.get("traceId"), e.getMessage());
+        log.error("[TraceID: {}] Illegal Argument: {}", MDC.get("traceId"), e.getMessage(), e);
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ErrorResponse.of(HttpStatus.BAD_REQUEST, "잘못된 요청 값: " + e.getMessage()));
@@ -93,7 +93,7 @@ public class GlobalExceptionAdviceImpl implements GlobalExceptionAdvice {
     // 낙관적 락 충돌 (동시성 제어 실패)
     @ExceptionHandler({OptimisticLockException.class, ObjectOptimisticLockingFailureException.class})
     public ResponseEntity<ErrorResponse> handleOptimisticLockException(Exception e) {
-        log.error("[TraceID: {}] Optimistic Lock Error: {}", MDC.get("traceId"), e.getMessage());
+        log.error("[TraceID: {}] Optimistic Lock Error: {}", MDC.get("traceId"), e.getMessage(), e);
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
                 .body(ErrorResponse.of(HttpStatus.CONFLICT, "데이터 변경 중에 충돌이 발생했습니다. 다시 시도해주세요."));
