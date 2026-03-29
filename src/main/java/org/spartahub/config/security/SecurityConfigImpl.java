@@ -37,11 +37,9 @@ public class SecurityConfigImpl implements SecurityConfig {
                         .authorities("ROLE_ANONYMOUS")
                 )
 
-                //  필터 순서: LoginFilter에서 실패해도 뒤로 넘어가게 설계됨
                 .addFilterBefore(loginFilter, UsernamePasswordAuthenticationFilter.class)
 
                 .authorizeHttpRequests(authorize -> authorize
-                        // 테스트를 위해 모든 경로를 완전히 개방
                         .anyRequest().permitAll()
                 )
 
