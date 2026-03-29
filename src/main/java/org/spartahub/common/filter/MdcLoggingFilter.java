@@ -20,8 +20,10 @@ public class MdcLoggingFilter implements Filter {
         HttpServletRequest httpRequest = (HttpServletRequest) request;
 
         // Trace ID 생성
-        String traceId = UUID.randomUUID().toString().substring(0, 8);
-
+        String traceId = httpRequest.getHeader("X-Trace-Id");
+        if (traceId == null) {
+            traceId = UUID.randomUUID().toString().substring(0, 8);
+        }
         // URI 및 Method 정보 추출
         String uri = httpRequest.getRequestURI();
         String method = httpRequest.getMethod();

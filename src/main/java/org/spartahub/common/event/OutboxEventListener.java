@@ -1,6 +1,5 @@
 package org.spartahub.common.event;
 
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -97,7 +96,7 @@ public class OutboxEventListener {
 
             if (outbox.getRetryCount() >= MAX_RETRY_COUNT) {
                 log.error("최대 재시도 횟수 초과(Total: {}). DLT로 격리합니다: {}", outbox.getRetryCount(), event.correlationId());
-                sendToDlt(event);
+                sendToDlt(event, outbox.getPayload());
             } else {
                 log.warn("메세지 전송 실패 (재시도 예정 {}/{}): {}", outbox.getRetryCount(), MAX_RETRY_COUNT, event.correlationId());
             }
@@ -105,11 +104,11 @@ public class OutboxEventListener {
     }
 
     // DLT 전송
-    private void sendToDlt(OutboxEvent event) {
+    private void sendToDlt(OutboxEvent event, String payload) {
         String dltTopic = event.eventType() + ".DLT";
         try {
             // DLT 전송은 재시도 없이 1회만 시도, 실패 시 에러 로그만 기록
-            kafkaTemplate.send(dltTopic, event.domainId(), event.payload())
+            kafkaTemplate.send(dltTopic, event.domainId(), payload)
                     .whenComplete((res, e) -> {
                         if (e != null) log.error("DLT 전송 실패: {}", event.correlationId(), e);
                         else log.info("DLT 전송 성공: {}", event.correlationId());
