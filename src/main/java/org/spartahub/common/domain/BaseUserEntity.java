@@ -26,7 +26,7 @@ public abstract class BaseUserEntity extends BaseEntity {
     protected String deletedBy;
 
     protected void delete() {
-        deletedBy = SecurityUtil.getCurrentUsername().orElse(null);
+        deletedBy = SecurityUtil.getCurrentUsername().orElse("SYSTEM");
         deletedAt = LocalDateTime.now();
     }
 }
