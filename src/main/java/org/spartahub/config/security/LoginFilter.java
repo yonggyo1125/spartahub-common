@@ -28,6 +28,7 @@ public class LoginFilter extends OncePerRequestFilter {
     private static final String HEADER_EMAIL = "X-User-Email";
     private static final String HEADER_SLACK_ID = "X-User-Slack-Id";
     private static final String HEADER_USER_NAME = "X-User-Name";
+    private static final String HEADER_ENABLED = "X-User-Enabled";
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -44,7 +45,7 @@ public class LoginFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
-    private void doLogin(HttpServletRequest request) {
+    private void doLogin(HttpServletRequest request)  {
         String userId = request.getHeader(HEADER_USER_ID);
         String username = request.getHeader(HEADER_USERNAME);
 
@@ -57,7 +58,7 @@ public class LoginFilter extends OncePerRequestFilter {
         String email = request.getHeader(HEADER_EMAIL);
         String slackId = request.getHeader(HEADER_SLACK_ID);
         String roles = request.getHeader(HEADER_ROLES);
-
+        String enabled = request.getHeader(HEADER_ENABLED);
 
         if (StringUtils.hasText(name)) {
             try {
@@ -78,6 +79,7 @@ public class LoginFilter extends OncePerRequestFilter {
                     .slackId(slackId)
                     .name(name)
                     .roles(roles)
+                    .enabled(enabled != null && enabled.equals("true"))
                     .build();
 
             Authentication authentication = new UsernamePasswordAuthenticationToken(

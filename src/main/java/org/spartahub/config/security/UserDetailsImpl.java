@@ -23,15 +23,17 @@ public class UserDetailsImpl implements UserDetails {
     private final String email;
     private final String slackId;
     private final String roles;
+    private final boolean enabled;
 
     @Builder
-    public UserDetailsImpl(UUID uuid, String username, String name, String email, String slackId, String roles) {
+    public UserDetailsImpl(UUID uuid, String username, String name, String email, String slackId, String roles, boolean enabled) {
         this.uuid = uuid;
         this.username = username;
         this.name = name;
         this.email = email;
         this.slackId = slackId;
         this.roles = roles;
+        this.enabled = enabled;
     }
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -81,6 +83,6 @@ public class UserDetailsImpl implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return enabled;
     }
 }
