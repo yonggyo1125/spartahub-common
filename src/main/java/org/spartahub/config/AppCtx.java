@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.spartahub.common.exception.GlobalExceptionAdvice;
 import org.spartahub.common.exception.GlobalExceptionAdviceImpl;
 import org.spartahub.common.filter.MdcLoggingFilter;
+import org.spartahub.common.response.CommonResponseAdvice;
 import org.spartahub.config.event.EventConfig;
 import org.spartahub.config.feign.FeignConfig;
 import org.spartahub.config.json.JsonConfig;
@@ -54,6 +55,11 @@ public class AppCtx {
     @ConditionalOnMissingBean(GlobalExceptionAdvice.class)
     public GlobalExceptionAdvice globalExceptionAdvice() {
         return new GlobalExceptionAdviceImpl();
+    }
+
+    @Bean
+    public CommonResponseAdvice commonResponseAdvice() {
+        return new CommonResponseAdvice();
     }
 
     // MDC 기반의 로깅 추적을 위한 필터를 스프링 컨테이너에 등록함
