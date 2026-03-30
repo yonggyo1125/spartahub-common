@@ -9,7 +9,7 @@ import java.util.UUID;
 
 /**
  * MDC: Mapped Diagnostic Context(로그용 쓰레드 보관함)
- * - 로그가 어떤 요청(Request)에 속해 있는지"**에 대한 부가 정보를 보관하는 쓰레드별 저장소
+ * - 로그가 어떤 요청(Request)에 속해 있는지에 대한 부가 정보를 보관하는 쓰레드별 저장소
  * - 내부적으로 ThreadLocal을 사용. 즉, 요청이 들어온 쓰레드 하나당 하나의 보관함이 배정된다.
  */
 public class MdcLoggingFilter implements Filter {
