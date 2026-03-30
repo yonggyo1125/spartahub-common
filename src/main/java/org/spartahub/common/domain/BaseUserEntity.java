@@ -27,7 +27,15 @@ public abstract class BaseUserEntity extends BaseEntity {
     protected String deletedBy;
 
     protected void delete(String deletedBy) {
-        this.deletedBy = StringUtils.hasText(deletedBy) ? deletedBy : SecurityUtil.getCurrentUsername().orElse("SYSTEM");
+        // 이미 삭제된 경우 중복 처리 방지
+        if (this.deletedAt != null) {
+            return;
+        }
+
+        this.deletedBy = StringUtils.hasText(deletedBy)
+                ? deletedBy
+                : SecurityUtil.getCurrentUsername().orElse("SYSTEM");
+
         this.deletedAt = LocalDateTime.now();
     }
 }
