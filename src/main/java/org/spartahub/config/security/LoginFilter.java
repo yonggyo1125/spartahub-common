@@ -26,6 +26,7 @@ public class LoginFilter extends OncePerRequestFilter {
     private static final String HEADER_USERNAME = "X-Username";
     private static final String HEADER_ROLES = "X-User-Roles";
     private static final String HEADER_EMAIL = "X-User-Email";
+    private static final String HEADER_SLACK_ID = "X-User-Slack-Id";
     private static final String HEADER_USER_NAME = "X-User-Name";
 
     @Override
@@ -54,7 +55,9 @@ public class LoginFilter extends OncePerRequestFilter {
 
         String name = request.getHeader(HEADER_USER_NAME);
         String email = request.getHeader(HEADER_EMAIL);
+        String slackId = request.getHeader(HEADER_SLACK_ID);
         String roles = request.getHeader(HEADER_ROLES);
+
 
         if (StringUtils.hasText(name)) {
             try {
@@ -72,6 +75,7 @@ public class LoginFilter extends OncePerRequestFilter {
                     .uuid(UUID.fromString(cleanUserId))
                     .username(username)
                     .email(email)
+                    .slackId(slackId)
                     .name(name)
                     .roles(roles)
                     .build();

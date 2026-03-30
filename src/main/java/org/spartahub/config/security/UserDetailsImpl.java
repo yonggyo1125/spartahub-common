@@ -21,14 +21,16 @@ public class UserDetailsImpl implements UserDetails {
     private final String username;
     private final String name;
     private final String email;
+    private final String slackId;
     private final String roles;
 
     @Builder
-    public UserDetailsImpl(UUID uuid, String username, String name, String email, String roles) {
+    public UserDetailsImpl(UUID uuid, String username, String name, String email, String slackId, String roles) {
         this.uuid = uuid;
         this.username = username;
         this.name = name;
         this.email = email;
+        this.slackId = slackId;
         this.roles = roles;
     }
     @Override
