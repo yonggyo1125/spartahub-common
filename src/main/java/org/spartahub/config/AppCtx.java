@@ -1,5 +1,6 @@
 package org.spartahub.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.spartahub.common.exception.GlobalExceptionAdvice;
 import org.spartahub.common.exception.GlobalExceptionAdviceImpl;
 import org.spartahub.common.filter.MdcLoggingFilter;
@@ -7,9 +8,7 @@ import org.spartahub.config.event.EventConfig;
 import org.spartahub.config.feign.FeignConfig;
 import org.spartahub.config.json.JsonConfig;
 import org.spartahub.config.persistence.JPAConfig;
-import org.spartahub.config.security.LoginFilter;
-import org.spartahub.config.security.SecurityConfig;
-import org.spartahub.config.security.SecurityConfigImpl;
+import org.spartahub.config.security.*;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
@@ -32,11 +31,22 @@ public class AppCtx {
         return new LoginFilter();
     }
 
+    @Bean
+    public CustomAuthenticationEntryPoint customAuthenticationEntryPoint(ObjectMapper  objectMapper) {
+        return new CustomAuthenticationEntryPoint(objectMapper);
+    }
+
+    @Bean
+    public CustomAccessDeniedHandler accessDeniedHandler(ObjectMapper  objectMapper) {
+        return new CustomAccessDeniedHandler(objectMapper);
+    }
+
+
     // SecurityConfig로 등록된 빈이 없다면 등록
     @Bean
     @ConditionalOnMissingBean(SecurityConfig.class)
-    public SecurityConfig securityConfig(LoginFilter loginFilter) {
-        return new SecurityConfigImpl(loginFilter);
+    public SecurityConfig securityConfig(LoginFilter loginFilter, CustomAuthenticationEntryPoint customAuthenticationEntryPoint, CustomAccessDeniedHandler accessDeniedHandler) {
+        return new SecurityConfigImpl(loginFilter, customAuthenticationEntryPoint, accessDeniedHandler);
     }
 
     // 전역 에러 출력 처리, GlobalExceptionAdvice로 등록된 빈이 없을때 기본 설정으로 등록됨
