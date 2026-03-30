@@ -23,7 +23,6 @@ import java.util.UUID;
 public class LoginFilter extends OncePerRequestFilter {
 
     private static final String HEADER_USER_ID = "X-User-Id";
-    private static final String HEADER_USERNAME = "X-Username";
     private static final String HEADER_ROLES = "X-User-Roles";
     private static final String HEADER_EMAIL = "X-User-Email";
     private static final String HEADER_SLACK_ID = "X-User-Slack-Id";
@@ -47,7 +46,7 @@ public class LoginFilter extends OncePerRequestFilter {
 
     private void doLogin(HttpServletRequest request)  {
         String userId = request.getHeader(HEADER_USER_ID);
-        String username = request.getHeader(HEADER_USERNAME);
+        String username = request.getHeader(HEADER_EMAIL);
 
         // 직접 접근 시 헤더가 없으므로 여기서 즉시 return
         if (!StringUtils.hasText(userId) || !StringUtils.hasText(username)) {

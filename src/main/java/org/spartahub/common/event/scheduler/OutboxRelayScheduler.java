@@ -19,12 +19,13 @@ import java.util.UUID;
 public class OutboxRelayScheduler {
     private final OutboxRepository outboxRepository;
     private final KafkaTemplate<String, Object> kafkaTemplate;
+    private final int MAX_RETRY_COUNT = 3;
 
     @Transactional
     @Scheduled(fixedDelay = 10000) // 10초에 한번씩 전송 미전송 또는 실패 메세지 재전송
     public void resendFailedMessages() {
         // PENDING, FAILED 상태이면서 retryCount가 3 미만 목록 조회
-        List<Outbox> items = (List<Outbox>)outboxRepository.findAll(QOutbox.outbox.status.in(List.of(OutboxStatus.PENDING, OutboxStatus.FAILED)).and(QOutbox.outbox.retryCount.lt(3)));
+        List<Outbox> items = (List<Outbox>)outboxRepository.findAll(QOutbox.outbox.status.in(List.of(OutboxStatus.PENDING, OutboxStatus.FAILED)).and(QOutbox.outbox.retryCount.lt(MAX_RETRY_COUNT)));
 
         if (items.isEmpty()) return;
 

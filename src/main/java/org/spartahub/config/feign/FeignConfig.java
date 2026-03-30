@@ -16,7 +16,6 @@ import java.util.List;
 public class FeignConfig {
     private static final String HEADER_TRACE_ID = "X-Trace-Id";
     private static final String HEADER_USER_ID = "X-User-Id";
-    private static final String HEADER_USERNAME = "X-Username";
     private static final String HEADER_ROLES = "X-User-Roles";
     private static final String HEADER_EMAIL = "X-User-Email";
     private static final String HEADER_SLACK_ID = "X-User-Slack-Id";
@@ -37,7 +36,7 @@ public class FeignConfig {
 
             // Gateway로부터 넘어온 사용자 정보 헤더들 전파
             List<String> userHeaders = List.of(
-                    HEADER_TRACE_ID, HEADER_USER_ID, HEADER_USERNAME, HEADER_USER_NAME, HEADER_EMAIL, HEADER_SLACK_ID, HEADER_ROLES, HEADER_ENABLED
+                    HEADER_TRACE_ID, HEADER_USER_ID, HEADER_USER_NAME, HEADER_EMAIL, HEADER_SLACK_ID, HEADER_ROLES, HEADER_ENABLED
             );
 
             for (String headerName : userHeaders) {
