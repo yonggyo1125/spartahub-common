@@ -1,6 +1,5 @@
 package org.spartahub.config.security;
 
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.spartahub.common.util.SecurityUtil;
@@ -24,32 +23,24 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfigImpl implements SecurityConfig {
 
     private final LoginFilter loginFilter;
+    private final CustomAuthenticationEntryPoint authenticationEntryPoint;
+    private final CustomAccessDeniedHandler accessDeniedHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(c -> c.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
-                .anonymous(anonymous -> anonymous
-                        .principal("anonymousUser")
-                        .authorities("ROLE_ANONYMOUS")
-                )
                 .addFilterBefore(loginFilter, UsernamePasswordAuthenticationFilter.class)
-
                 .authorizeHttpRequests(authorize -> authorize
                         .anyRequest().permitAll()
                 )
-
                 .exceptionHandling(c -> {
-                    c.authenticationEntryPoint((req, res, e) -> {
-                        log.error("authenticationEntryPoint: {} - {}", req.getRequestURI(), e.getMessage());
-                        res.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-                    });
-                    c.accessDeniedHandler((req, res, e) -> {
-                        log.error("accessDeniedHandler: {} - {}", req.getRequestURI(), e.getMessage());
-                        res.sendError(HttpServletResponse.SC_FORBIDDEN);
-                    });
+                    // 401 Unauthorized 처리
+                    c.authenticationEntryPoint(authenticationEntryPoint);
+
+                    // 403 Forbidden 처리 (추가)
+                    c.accessDeniedHandler(accessDeniedHandler);
                 });
 
         return http.build();
