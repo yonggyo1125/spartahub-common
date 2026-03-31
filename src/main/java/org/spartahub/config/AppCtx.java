@@ -11,12 +11,14 @@ import org.spartahub.config.json.JsonConfig;
 import org.spartahub.config.kafka.KafkaConfig;
 import org.spartahub.config.persistence.JPAConfig;
 import org.spartahub.config.security.*;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 // 스프링 부트의 자동 설정 매커니즘에 참여하여 라이브러리 로드 시 자동 실행됨
 @AutoConfiguration
@@ -30,8 +32,8 @@ import org.springframework.core.Ordered;
 public class AppCtx {
 
     @Bean
-    public LoginFilter loginFilter() {
-        return new LoginFilter();
+    public LoginFilter loginFilter(@Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {
+        return new LoginFilter(resolver);
     }
 
     @Bean
