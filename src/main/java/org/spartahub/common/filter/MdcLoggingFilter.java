@@ -22,7 +22,7 @@ public class MdcLoggingFilter implements Filter {
         // Trace ID 생성
         String traceId = httpRequest.getHeader("X-Trace-Id");
         if (traceId == null) {
-            traceId = UUID.randomUUID().toString().substring(0, 8);
+            traceId = UUID.randomUUID().toString().substring(0, 16);
         }
         // URI 및 Method 정보 추출
         String uri = httpRequest.getRequestURI();
