@@ -47,7 +47,7 @@ public class LoginFilter extends OncePerRequestFilter {
     private void doLogin(HttpServletRequest request)  {
         String userId = request.getHeader(HEADER_USER_ID);
         String username = request.getHeader(HEADER_EMAIL);
-
+        log.debug("Header Check - ID: {}, Email: {}", userId, username);
         // 직접 접근 시 헤더가 없으므로 여기서 즉시 return
         if (!StringUtils.hasText(userId) || !StringUtils.hasText(username)) {
             return;
