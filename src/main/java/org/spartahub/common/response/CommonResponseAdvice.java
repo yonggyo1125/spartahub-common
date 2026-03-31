@@ -3,6 +3,7 @@ package org.spartahub.common.response;
 import org.slf4j.MDC;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
@@ -13,9 +14,15 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 public class CommonResponseAdvice implements ResponseBodyAdvice<Object>  {
     @Override
     public boolean supports(MethodParameter returnType, Class<? extends HttpMessageConverter<?>> converterType) {
-        // CommonResponse를 직접 쓰거나 String으로 반환하는 경우는 변환 배제
-        return !returnType.getParameterType().equals(CommonResponse.class) &&
-                !returnType.getParameterType().equals(String.class);
+        Class<?> type = returnType.getParameterType();
+
+        // 이미 규격화된 응답이거나 특수 타입인 경우 제외
+        return !(type.equals(CommonResponse.class) ||
+                type.equals(ErrorResponse.class) ||
+                type.equals(ResponseEntity.class) ||
+                type.equals(String.class) ||
+                type.equals(Void.class) ||
+                type.isPrimitive()); // 기본 자료형 반환 시에도 주의 필요
     }
 
     @Override
