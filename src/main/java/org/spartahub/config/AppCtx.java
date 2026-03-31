@@ -8,6 +8,7 @@ import org.spartahub.common.response.CommonResponseAdvice;
 import org.spartahub.config.event.EventConfig;
 import org.spartahub.config.feign.FeignConfig;
 import org.spartahub.config.json.JsonConfig;
+import org.spartahub.config.kafka.KafkaConfig;
 import org.spartahub.config.persistence.JPAConfig;
 import org.spartahub.config.security.*;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
@@ -23,7 +24,8 @@ import org.springframework.core.Ordered;
         FeignConfig.class,
         EventConfig.class,
         JPAConfig.class,
-        JsonConfig.class
+        JsonConfig.class,
+        KafkaConfig.class
 })
 public class AppCtx {
 
