@@ -50,7 +50,7 @@ public class LoginFilter extends OncePerRequestFilter {
             resolver.resolveException(request, response, null, e);
             return;
         } catch (Exception e) {
-            log.error("Failed to set user authentication in security context", e);
+            log.error("인증에 실패하였습니다: {}", e.getMessage(), e);
             resolver.resolveException(request, response, null, e);
             return;
 
