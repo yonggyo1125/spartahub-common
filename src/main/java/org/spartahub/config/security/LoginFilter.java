@@ -51,6 +51,8 @@ public class LoginFilter extends OncePerRequestFilter {
             return;
         } catch (Exception e) {
             log.error("Failed to set user authentication in security context", e);
+            resolver.resolveException(request, response, null, e);
+            return;
 
         }
 
@@ -83,7 +85,6 @@ public class LoginFilter extends OncePerRequestFilter {
         try {
             // UUID 파싱 전 trim()으로 불필요한 공백 제거
             String cleanUserId = userId.trim();
-            boolean isEnabledHeader = "true".equalsIgnoreCase(request.getHeader(HEADER_ENABLED));
 
             UserDetails userDetails = UserDetailsImpl.builder()
                     .uuid(UUID.fromString(cleanUserId))
@@ -92,11 +93,11 @@ public class LoginFilter extends OncePerRequestFilter {
                     .slackId(slackId)
                     .name(name)
                     .roles(roles)
-                    .enabled(enabled != null && enabled.equals("true"))
+                    .enabled("true".equalsIgnoreCase(enabled))
                     .build();
 
             if (!userDetails.isEnabled()) {
-                String errorMsg = isEnabledHeader ? "계정 상태를 확인해주세요." : "승인 대기 중이거나 탈퇴한 사용자입니다.";
+                String errorMsg = "승인 대기 중이거나 탈퇴한 사용자입니다.";
                 log.warn("[LoginFilter] 점근이 제한된 사용자 입니다: {}, 사유: {}", cleanUserId, errorMsg);
                 throw new DisabledException(errorMsg);
             }
@@ -109,8 +110,6 @@ public class LoginFilter extends OncePerRequestFilter {
         } catch (IllegalArgumentException e) {
             // 잘못된 UUID 형식이 들어와도 401을 던지지 않고 익명 상태로 진행시킵니다.
             log.warn("Invalid UUID format from Gateway header: " + userId, e);
-        } catch (DisabledException e) {
-            throw e;
         }
     }
 }
