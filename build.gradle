@@ -49,6 +49,11 @@ dependencies {
     api "com.github.danielwegener:logback-kafka-appender:0.2.0-RC2"
     api 'net.logstash.logback:logstash-logback-encoder:7.4'
 
+    // Zipkin
+    api 'io.micrometer:micrometer-tracing-bridge-brave'
+    api 'io.zipkin.reporter2:zipkin-reporter-brave'
+    api 'io.github.openfeign:feign-micrometer'
+
     api 'com.querydsl:querydsl-jpa:5.1.0:jakarta'
     annotationProcessor 'com.querydsl:querydsl-apt:5.1.0:jakarta'
     annotationProcessor 'jakarta.annotation:jakarta.annotation-api'
