@@ -45,6 +45,10 @@ public class EventConfig implements AsyncConfigurer {
         // MdcTaskDecorator 등록
         executor.setTaskDecorator(new MdcTaskDecorator());
 
+        // 서버가 배포되거나 종료될 때 쓰레드가 갑자기 죽지 않도록 다음 설정 추가
+        executor.setWaitForTasksToCompleteOnShutdown(true);
+        executor.setAwaitTerminationSeconds(60); // 최대 60초 대기
+
         executor.initialize();
         return new DelegatingSecurityContextAsyncTaskExecutor(executor);
     }
