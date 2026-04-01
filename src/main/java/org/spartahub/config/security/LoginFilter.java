@@ -98,7 +98,7 @@ public class LoginFilter extends OncePerRequestFilter {
 
             if (!userDetails.isEnabled()) {
                 String errorMsg = "승인 대기 중이거나 탈퇴한 사용자입니다.";
-                log.warn("[LoginFilter] 점근이 제한된 사용자 입니다: {}, 사유: {}", cleanUserId, errorMsg);
+                log.warn("[LoginFilter] 접근이 제한된 사용자 입니다: {}, 사유: {}", cleanUserId, errorMsg);
                 throw new DisabledException(errorMsg);
             }
 
